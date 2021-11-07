@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-
+const path = require("path");
 const infoRouter = require("./routers/personInfo");
 const morganMiddleware = require("./middlewares/morganMiddleware");
 
@@ -11,6 +11,12 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// * Static files
+app.use("/", express.static(path.resolve("./dist")));
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve("./dist/index.html"));
+});
 
 // * Middlwares
 app.use(morganMiddleware);
