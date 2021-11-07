@@ -29,7 +29,7 @@ router.delete("/:id", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-  const newPerson = req.body;
+  const newPerson = Object.assign({}, req.body);
   if (
     !newPerson.hasOwnProperty("name") ||
     !newPerson.hasOwnProperty("number")
@@ -53,12 +53,12 @@ router.get("/", (req, res, next) => {
 module.exports = router;
 
 function generateId() {
-  return Math.floor(Math.random() * 1000);
+  return Math.floor(Math.random() * 10000);
 }
 
-function isNameExsits() {
+function isNameExsits(name) {
   const result = persons.filter((person) => {
-    return person.name === newPerson.name;
+    return person.name === name;
   });
   return result.length !== 0;
 }
