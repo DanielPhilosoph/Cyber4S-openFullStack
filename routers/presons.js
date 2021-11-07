@@ -29,7 +29,7 @@ router.delete("/:id", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-  const newPerson = req.body;
+  const newPerson = Object.assign({}, req.body);
   if (
     !newPerson.hasOwnProperty("name") ||
     !newPerson.hasOwnProperty("number")
