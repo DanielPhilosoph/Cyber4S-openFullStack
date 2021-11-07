@@ -53,7 +53,7 @@ router.get("/", (req, res, next) => {
 module.exports = router;
 
 function generateId() {
-  return Math.floor(Math.random() * 1000);
+  return Math.floor(Math.random() * 10000);
 }
 
 function isNameExsits(name) {
