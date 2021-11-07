@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const infoRouter = require("./routers/info");
+const infoRouter = require("./routers/PersonsInfo");
 const app = express();
 const presonsRouter = require("./routers/presons");
 const PORT = process.env.PORT || 3000;
