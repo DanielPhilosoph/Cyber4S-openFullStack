@@ -1,5 +1,6 @@
 const express = require("express");
 const persons = require("../phonebook");
+const Person = require("../mongodb/mongoPerson");
 const router = express.Router();
 /**
  * *This route routes to:
@@ -54,6 +55,8 @@ router.get("/", (req, res, next) => {
 });
 
 module.exports = router;
+
+function createNewPerson(id, name, number) {}
 
 function generateId() {
   return Math.floor(Math.random() * 10000);
