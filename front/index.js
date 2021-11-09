@@ -84,9 +84,8 @@ getDataBase();
 
 async function deletePhone(event) {
   event.target.closest("LI").remove();
-  const response = await axios.delete(
-    `${baseUrl}api/persons/${event.target.dataset.id}`
-  );
+  const id = event.target.closest("BUTTON").dataset.id;
+  await axios.delete(`${baseUrl}api/persons/${id}`);
 }
 
 function createElement(

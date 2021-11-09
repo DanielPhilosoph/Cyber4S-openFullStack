@@ -32,7 +32,7 @@ router.delete("/:id", (req, res, next) => {
   }
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", async (req, res, next) => {
   const newPerson = Object.assign({}, req.body);
   if (
     !newPerson.hasOwnProperty("name") ||
@@ -43,9 +43,13 @@ router.post("/", (req, res, next) => {
     if (isNameExsits(newPerson.name)) {
       res.status(409).json({ error: "name must be unique" });
     } else {
-      newPerson.id = generateId();
-      persons.push(newPerson);
-      res.send(persons);
+      if (
+        await createNewPerson(generateId(), newPerson.name, newPerson.number)
+      ) {
+        res.send("Added new contact");
+      } else {
+        response.status(500).send("Could not add person");
+      }
     }
   }
 });
@@ -56,7 +60,15 @@ router.get("/", (req, res, next) => {
 
 module.exports = router;
 
-function createNewPerson(id, name, number) {}
+async function createNewPerson(id, name, number) {
+  const person = new Person({ _id: id, name: name, number: number });
+  try {
+    await person.save();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 function generateId() {
   return Math.floor(Math.random() * 10000);
