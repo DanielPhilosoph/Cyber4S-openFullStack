@@ -8,9 +8,11 @@ const isProduction = process.env.NODE_ENV == "production";
 const stylesHandler = "style-loader";
 
 const config = {
-  entry: "./front/index.js",
+  entry: { index: "./front/index.js", info: "./front/JS/info.js" },
   output: {
     path: path.resolve(__dirname, "dist"),
+    publicPath: "./",
+    assetModuleFilename: "images/[name][ext][query]",
   },
   devServer: {
     open: true,
@@ -18,7 +20,16 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      filename: "index.html",
       template: "./front/index.html",
+      chunks: ["index"],
+      "stats.children": true,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "info.html",
+      template: "./front/htmlPages/info.html",
+      chunks: ["info"],
+      "stats.children": true,
     }),
 
     // Add your plugins here
@@ -39,8 +50,8 @@ const config = {
         use: [stylesHandler, "css-loader", "sass-loader"],
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: "asset",
+        test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
+        type: "asset/resource",
       },
 
       // Add your rules for custom modules here
