@@ -6,30 +6,19 @@ const router = express.Router();
  * *This route routes to:
  * ? /api/persons
  */
-router.get("/:id", (req, res, next) => {
-  const person = persons.filter((person) => {
-    return parseInt(person.id) === parseInt(req.params.id);
-  });
-  if (person.length === 0) {
-    res.status(404).send("Person not found");
-  } else {
-    res.json(person);
-  }
+router.get("/:id", async (req, res, next) => {
+  const id = Number(req.params.id);
+  const obj = await Person.findOne({ _id: id });
+  obj ? res.send(obj) : res.status(404).send();
 });
 
-router.delete("/:id", (req, res, next) => {
-  const person = persons.filter((person) => {
-    if (parseInt(person.id) === parseInt(req.params.id)) {
-      return true;
-    }
-  });
-  if (person.length === 0) {
-    res.status(404).send("Person not found");
-  } else {
-    persons.splice(persons.indexOf(person), 1);
-    console.log(persons);
-    res.send(`Deleted ${req.params.id}`);
+router.delete("/:id", async (req, res, next) => {
+  const id = Number(req.params.id);
+  const response = await Person.deleteOne({ _id: id });
+  if (response.deletedCount === 0) {
+    res.send("delete was not succesful");
   }
+  res.end();
 });
 
 router.post("/", async (req, res, next) => {
@@ -54,8 +43,8 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/", (req, res, next) => {
-  res.send(persons);
+router.get("/", async (req, res, next) => {
+  res.send(await Person.find({}));
 });
 
 module.exports = router;
@@ -70,17 +59,14 @@ async function createNewPerson(id, name, number) {
   }
 }
 
-async function findPerson(id) {
-  return Person.find({ _id: id });
-}
-
 function generateId() {
   return Math.floor(Math.random() * 10000);
 }
 
 function isNameExsits(name) {
-  const result = persons.filter((person) => {
-    return person.name === name;
-  });
-  return result.length !== 0;
+  const counter = Person.find({ name: name }).count();
+  if (counter === 0) {
+    return false;
+  }
+  return true;
 }
