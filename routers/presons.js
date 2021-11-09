@@ -48,7 +48,7 @@ router.post("/", async (req, res, next) => {
       ) {
         res.send("Added new contact");
       } else {
-        response.status(500).send("Could not add person");
+        response.status(502).send("Could not add person");
       }
     }
   }
@@ -68,6 +68,10 @@ async function createNewPerson(id, name, number) {
   } catch (error) {
     return false;
   }
+}
+
+async function findPerson(id) {
+  return Person.find({ _id: id });
 }
 
 function generateId() {

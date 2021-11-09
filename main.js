@@ -14,7 +14,7 @@ app.use(express.json());
 
 // * MongoDB connection
 // TODO
-const password = process.argv[2];
+//const password = process.argv[2];
 const url = `mongodb+srv://daniel_mongo_user:Edaniel7@cluster0.xx3io.mongodb.net/phonebook?retryWrites=true&w=majority`;
 
 mongoose.connect(url);

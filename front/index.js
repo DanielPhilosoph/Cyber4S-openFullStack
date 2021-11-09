@@ -54,7 +54,13 @@ async function renderPhoneBook(persons) {
       const span = createElement("span", [person.number], []);
       const a = createElement("a", [person.name, span]);
       const leftDiv = createElement("div", [a]);
-      const li = createElement("li", [leftDiv, rightDiv], [], {}, {});
+      const li = createElement(
+        "li",
+        [leftDiv, rightDiv],
+        [],
+        { id: `index-${person.name[0].toUpperCase()}` },
+        {}
+      );
       phoneBook.append(li);
     }
   } catch (error) {}
