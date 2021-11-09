@@ -7,7 +7,7 @@ const morganMiddleware = require("./middlewares/morganMiddleware");
 const mongoose = require("mongoose");
 const app = express();
 const presonsRouter = require("./routers/presons");
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -30,6 +30,10 @@ db.once("open", function () {
 app.use("/", express.static(path.resolve("./dist")));
 app.get("/", (req, res) => {
   res.sendFile(path.resolve("./dist/index.html"));
+});
+app.get("/addContact", (req, res) => {
+  console.log("going to next page");
+  res.sendFile(path.resolve("./dist/addContact.html"));
 });
 
 // * Middlwares
