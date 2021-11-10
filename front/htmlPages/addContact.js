@@ -1,5 +1,6 @@
 import "./addContact.scss";
 import axios from "axios";
+const baseUrl = "/";
 
 async function addContact(event) {
   event.preventDefault();
@@ -19,7 +20,7 @@ async function addContact(event) {
     ) {
       label.innerText = "Loading...";
       console.log("inside the if of add contact");
-      const response = await axios.post("http://localhost:3001/api/persons", {
+      const response = await axios.post(`${baseUrl}api/persons`, {
         name: firstName + " " + lastName,
         number: number,
       });

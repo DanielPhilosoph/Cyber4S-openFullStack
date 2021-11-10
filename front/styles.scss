@@ -9,7 +9,6 @@
 
 body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  font-size: 12px;
 }
 
 :focus {
@@ -92,7 +91,8 @@ body {
   line-height: 22px;
   text-indent: 300px;
 }
-.element .element-header input:focus + * {
+.element .element-header input:focus + *,
+.element .element-header input:focus + * + * {
   display: none;
 }
 .element .element-header input:focus {
@@ -298,7 +298,6 @@ main .leftDiv {
   transform: scale(0.8) rotate(-1deg);
 }
 
-// info icon
 .fa-info-circle {
   color: black;
   cursor: pointer;

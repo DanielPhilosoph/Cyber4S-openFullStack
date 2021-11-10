@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const dotenv = require("dotenv").config();
 const path = require("path");
 const infoRouter = require("./routers/personInfo");
 const morganMiddleware = require("./middlewares/morganMiddleware");
+const errorHandlerMiddleware = require("./middlewares/errorHandler");
 const mongoose = require("mongoose");
 const app = express();
 const presonsRouter = require("./routers/presons");
@@ -13,9 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // * MongoDB connection
-// TODO
-//const password = process.argv[2];
-const url = `mongodb+srv://daniel_mongo_user:Edaniel7@cluster0.xx3io.mongodb.net/phonebook?retryWrites=true&w=majority`;
+const url = `mongodb+srv://daniel_mongo_user:${process.env.PASSWORD}@cluster0.xx3io.mongodb.net/phonebook?retryWrites=true&w=majority`;
 
 mongoose.connect(url);
 
@@ -46,6 +46,9 @@ app.use(
 // * Routers
 app.use("/api/persons", presonsRouter);
 app.use("/info", infoRouter);
+
+// * error handler middleware
+app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}...`);

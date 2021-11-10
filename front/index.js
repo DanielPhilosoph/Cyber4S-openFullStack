@@ -1,13 +1,12 @@
 import styles from "./styles.scss";
 import phoneBook from "./images/background.jpeg";
 import axios from "axios";
-const baseUrl = "http://localhost:3001/";
+const baseUrl = "/";
 
 async function openContactInfo(event) {
   const id = event.target.dataset.id;
 
   const response = await axios.get(`${baseUrl}api/persons/${id}`);
-  console.log(response.data);
   alert(JSON.stringify(response.data));
 }
 async function renderPhoneBook(persons) {
@@ -25,7 +24,7 @@ async function renderPhoneBook(persons) {
         {
           "data-container": "body",
           "data-toggle": "popover",
-          "data-id": `${person.id}`,
+          "data-id": `${person._id}`,
         },
         { click: openContactInfo }
       );
@@ -46,7 +45,7 @@ async function renderPhoneBook(persons) {
         "button",
         [deleteIcon],
         ["button-delete"],
-        { "data-id": person.id },
+        { "data-id": person._id },
         { click: deletePhone }
       );
       const rightDiv = createElement("div", [info, callBtn, deleteBtn], []);
@@ -64,6 +63,8 @@ async function renderPhoneBook(persons) {
       phoneBook.append(li);
     }
   } catch (error) {}
+
+  document.querySelector(".info-div").textContent = await getPhoneBookInfo();
 }
 
 function sortArray(array) {
@@ -92,6 +93,7 @@ async function deletePhone(event) {
   event.target.closest("LI").remove();
   const id = event.target.closest("BUTTON").dataset.id;
   await axios.delete(`${baseUrl}api/persons/${id}`);
+  document.querySelector(".info-div").textContent = await getPhoneBookInfo();
 }
 
 function createElement(
@@ -147,7 +149,6 @@ async function filterLists(query) {
   for (const person of persons) {
     const name = person.name.toLowerCase();
     if (name.indexOf(query) !== -1) {
-      console.log(name);
       filteredPersons.push(person);
     }
   }
@@ -165,9 +166,6 @@ document
 async function mouseoverInfoHandler(e) {
   const infoDiv = document.querySelector(".info-div");
   infoDiv.classList.remove("display-none");
-  const phoneBookInfo = await getPhoneBookInfo();
-  console.log(phoneBookInfo);
-  infoDiv.append(phoneBookInfo);
   const left = e.pageX;
   const top = e.pageY;
   const divHeight = infoDiv.offsetHeight;
@@ -178,10 +176,9 @@ async function mouseoverInfoHandler(e) {
 function mouseoutInfoHandler(e) {
   const infoDiv = document.querySelector(".info-div");
   infoDiv.classList.add("display-none");
-  while (infoDiv.firstChild) infoDiv.removeChild(infoDiv.firstChild);
   e.target.removeEventListener("mouseout", mouseoutInfoHandler);
 }
 async function getPhoneBookInfo() {
-  const response = await axios.get(`http://localhost:3001/info`);
+  const response = await axios.get(`${baseUrl}info`);
   return response.data;
 }

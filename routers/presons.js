@@ -29,7 +29,7 @@ router.post("/", async (req, res, next) => {
   ) {
     res.status(404).json({ error: "name / number missing from body" });
   } else {
-    if (isNameExsits(newPerson.name)) {
+    if (await isNameExsits(newPerson.name)) {
       res.status(409).json({ error: "name must be unique" });
     } else {
       if (
@@ -63,10 +63,7 @@ function generateId() {
   return Math.floor(Math.random() * 10000);
 }
 
-function isNameExsits(name) {
-  const counter = Person.find({ name: name }).count();
-  if (counter === 0) {
-    return false;
-  }
-  return true;
+async function isNameExsits(name) {
+  let persons = await Person.find({});
+  return persons.findIndex((obj) => obj.name === name) !== -1;
 }
