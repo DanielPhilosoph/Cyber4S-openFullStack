@@ -16,9 +16,8 @@ async function addContact(event) {
     ) {
       label.style.display = "inline";
       label.innerText = "Loading...";
-      let response;
       try {
-        response = await axios.post(`${baseUrl}api/persons`, {
+        await axios.post(`${baseUrl}api/persons`, {
           name: firstName + " " + lastName,
           number: number,
         });
@@ -26,7 +25,7 @@ async function addContact(event) {
       } catch (error) {
         if (error.response.data.message === "name must be unique") {
           try {
-            response = await axios.put(`${baseUrl}api/persons`, {
+            await axios.put(`${baseUrl}api/persons`, {
               name: firstName + " " + lastName,
               number: number,
             });
