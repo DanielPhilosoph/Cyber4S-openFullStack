@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/:id", async (req, res, next) => {
   const id = Number(req.params.id);
   const obj = await Person.findOne({ _id: id });
-  obj ? res.send(obj) : res.status(404).send();
+  obj ? res.send(obj) : next({ status: 404, error: "Contact not found" });
 });
 
 router.delete("/:id", async (req, res, next) => {
@@ -27,18 +27,38 @@ router.post("/", async (req, res, next) => {
     !newPerson.hasOwnProperty("name") ||
     !newPerson.hasOwnProperty("number")
   ) {
-    res.status(404).json({ error: "name / number missing from body" });
+    return next({ status: 404, error: "name / number missing from body" });
   } else {
-    if (await isNameExsits(newPerson.name)) {
-      res.status(409).json({ error: "name must be unique" });
+    if (await isNameExists(newPerson.name)) {
+      return next({ status: 409, error: "name must be unique" });
     } else {
       if (
         await createNewPerson(generateId(), newPerson.name, newPerson.number)
       ) {
         res.send("Added new contact");
       } else {
-        response.status(502).send("Could not add person");
+        return next({ status: 502, error: "Could not add person" });
       }
+    }
+  }
+});
+
+router.put("/", async (req, res, next) => {
+  const newPerson = Object.assign({}, req.body);
+  if (
+    !newPerson.hasOwnProperty("name") ||
+    !newPerson.hasOwnProperty("number")
+  ) {
+    return next({ status: 404, error: "name / number missing from body" });
+  } else {
+    if (await isNameExists(newPerson.name)) {
+      if (await updatePerson(newPerson.name, newPerson.number)) {
+        res.send(`Updated ${newPerson.name}`);
+      } else {
+        return next({ status: 500, error: "Could not update" });
+      }
+    } else {
+      return next({ status: 404, error: "Name must exsits in database" });
     }
   }
 });
@@ -59,11 +79,19 @@ async function createNewPerson(id, name, number) {
   }
 }
 
+async function updatePerson(name, number) {
+  let update = await Person.updateOne({ name: name }, { number: number });
+  if (update.matchedCount === 0) {
+    return false;
+  }
+  return true;
+}
+
 function generateId() {
   return Math.floor(Math.random() * 10000);
 }
 
-async function isNameExsits(name) {
+async function isNameExists(name) {
   let persons = await Person.find({});
   return persons.findIndex((obj) => obj.name === name) !== -1;
 }
