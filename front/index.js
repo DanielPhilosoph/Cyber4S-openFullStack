@@ -1,5 +1,5 @@
-import styles from "./styles.scss";
-import phoneBook from "./images/background.jpeg";
+import "./styles.scss";
+import "./images/background.jpeg";
 import axios from "axios";
 const baseUrl = "/";
 
@@ -12,57 +12,56 @@ async function openContactInfo(event) {
 async function renderPhoneBook(persons) {
   const phoneBook = document.getElementById("phoneBook");
   removeChildren(phoneBook);
-  try {
-    for (let person of persons) {
-      // rightdiv build
-      const callIcon = createElement("i", [], ["fas fa-phone"]);
-      // <i class="fas fa-info-circle" id="info" data-container="body" data-toggle="popover" data-placement="right">
-      const deleteIcon = createElement("i", [], ["fas fa-minus-circle"]);
-      const callBtn = createElement(
-        "button",
-        [callIcon],
-        ["button-call"],
-        {
-          "data-toggle": "modal",
-          "data-target": "#callPersonModal",
-          "data-number": `${person.number}`,
-          "data-name": `${person.name}`,
-        },
-        { click: onCallClick }
-      );
-      const deleteBtn = createElement(
-        "button",
-        [deleteIcon],
-        ["button-delete"],
-        { "data-id": person._id },
-        { click: deletePhone }
-      );
-      const info = createElement(
-        "i",
-        [],
-        ["fas", "fa-info-circle"],
-        {
-          "data-container": "body",
-          "data-toggle": "popover",
-          "data-id": `${person._id}`,
-        },
-        { click: openContactInfo }
-      );
-      const rightDiv = createElement("div", [callBtn, deleteBtn, info], []);
-      //   left div build
-      const span = createElement("span", [person.number], []);
-      const a = createElement("a", [person.name, span]);
-      const leftDiv = createElement("div", [a]);
-      const li = createElement(
-        "li",
-        [leftDiv, rightDiv],
-        [],
-        { id: `index-${person.name[0].toUpperCase()}` },
-        {}
-      );
-      phoneBook.append(li);
-    }
-  } catch (error) {}
+
+  for (let person of persons) {
+    // rightdiv build
+    const callIcon = createElement("i", [], ["fas fa-phone"]);
+    // <i class="fas fa-info-circle" id="info" data-container="body" data-toggle="popover" data-placement="right">
+    const deleteIcon = createElement("i", [], ["fas fa-minus-circle"]);
+    const callBtn = createElement(
+      "button",
+      [callIcon],
+      ["button-call"],
+      {
+        "data-toggle": "modal",
+        "data-target": "#callPersonModal",
+        "data-number": `${person.number}`,
+        "data-name": `${person.name}`,
+      },
+      { click: onCallClick }
+    );
+    const deleteBtn = createElement(
+      "button",
+      [deleteIcon],
+      ["button-delete"],
+      { "data-id": person._id },
+      { click: deletePhone }
+    );
+    const info = createElement(
+      "i",
+      [],
+      ["fas", "fa-info-circle"],
+      {
+        "data-container": "body",
+        "data-toggle": "popover",
+        "data-id": `${person._id}`,
+      },
+      { click: openContactInfo }
+    );
+    const rightDiv = createElement("div", [callBtn, deleteBtn, info], []);
+    //   left div build
+    const span = createElement("span", [person.number], []);
+    const a = createElement("a", [person.name, span]);
+    const leftDiv = createElement("div", [a]);
+    const li = createElement(
+      "li",
+      [leftDiv, rightDiv],
+      [],
+      { id: `index-${person.name[0].toUpperCase()}` },
+      {}
+    );
+    phoneBook.append(li);
+  }
 
   document.querySelector(".info-div").textContent = await getPhoneBookInfo();
 }
@@ -134,7 +133,7 @@ function onCallClick(event) {
 }
 
 document.getElementById("search").addEventListener("keyup", searchHandler);
-async function searchHandler(e) {
+async function searchHandler() {
   if (document.activeElement.id !== "search") return;
   const searchInput = document.activeElement;
   const query = searchInput.value;

@@ -1,5 +1,4 @@
 const express = require("express");
-const persons = require("../phonebook");
 const Person = require("../mongodb/mongoPerson");
 const router = express.Router();
 /**
@@ -13,31 +12,38 @@ router.get("/:id", async (req, res, next) => {
 });
 
 router.delete("/:id", async (req, res, next) => {
-  const id = Number(req.params.id);
-  const response = await Person.deleteOne({ _id: id });
-  if (response.deletedCount === 0) {
-    res.send("delete was not succesful");
+  try {
+    const id = Number(req.params.id);
+    const response = await Person.deleteOne({ _id: id });
+    if (response.deletedCount === 0) {
+      res.send("delete was not succesful");
+    }
+    res.end();
+  } catch (error) {
+    next({ status: 500, error: "Internal server error" });
   }
-  res.end();
 });
 
 router.post("/", async (req, res, next) => {
   const newPerson = Object.assign({}, req.body);
   if (
-    !newPerson.hasOwnProperty("name") ||
-    !newPerson.hasOwnProperty("number")
+    !Object.prototype.hasOwnProperty.call(newPerson, "name") ||
+    !Object.prototype.hasOwnProperty.call(newPerson, "number")
   ) {
     return next({ status: 404, error: "name / number missing from body" });
   } else {
     if (await isNameExists(newPerson.name)) {
       return next({ status: 409, error: "name must be unique" });
     } else {
-      if (
-        await createNewPerson(generateId(), newPerson.name, newPerson.number)
-      ) {
+      const isPersonCreated = await createNewPerson(
+        generateId(),
+        newPerson.name,
+        newPerson.number
+      );
+      if (isPersonCreated.isCreated) {
         res.send("Added new contact");
       } else {
-        return next({ status: 502, error: "Could not add person" });
+        next({ status: 406, error: isPersonCreated.error });
       }
     }
   }
@@ -46,16 +52,20 @@ router.post("/", async (req, res, next) => {
 router.put("/", async (req, res, next) => {
   const newPerson = Object.assign({}, req.body);
   if (
-    !newPerson.hasOwnProperty("name") ||
-    !newPerson.hasOwnProperty("number")
+    !Object.prototype.hasOwnProperty.call(newPerson, "name") ||
+    !Object.prototype.hasOwnProperty.call(newPerson, "number")
   ) {
     return next({ status: 404, error: "name / number missing from body" });
   } else {
     if (await isNameExists(newPerson.name)) {
-      if (await updatePerson(newPerson.name, newPerson.number)) {
+      let isPersonUpdated = await updatePerson(
+        newPerson.name,
+        newPerson.number
+      );
+      if (isPersonUpdated.isUpdated) {
         res.send(`Updated ${newPerson.name}`);
       } else {
-        return next({ status: 500, error: "Could not update" });
+        return next({ status: 406, error: isPersonUpdated.error });
       }
     } else {
       return next({ status: 404, error: "Name must exsits in database" });
@@ -63,28 +73,35 @@ router.put("/", async (req, res, next) => {
   }
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res) => {
   res.send(await Person.find({}));
 });
 
 module.exports = router;
 
 async function createNewPerson(id, name, number) {
-  const person = new Person({ _id: id, name: name, number: number });
   try {
-    await person.save();
-    return true;
+    await Person.create({ _id: id, name: name, number: number });
+    return { isCreated: true };
   } catch (error) {
-    return false;
+    return { isCreated: false, error: error.message };
   }
 }
 
 async function updatePerson(name, number) {
-  let update = await Person.updateOne({ name: name }, { number: number });
-  if (update.matchedCount === 0) {
-    return false;
+  try {
+    let update = await Person.updateOne(
+      { name: name },
+      { number: number },
+      { runValidators: true }
+    );
+    if (update.matchedCount === 0) {
+      return false;
+    }
+    return { isUpdated: true };
+  } catch (error) {
+    return { isUpdated: false, error: error.message };
   }
-  return true;
 }
 
 function generateId() {

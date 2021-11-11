@@ -1,14 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const path = require("path");
 const infoRouter = require("./routers/personInfo");
 const morganMiddleware = require("./middlewares/morganMiddleware");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
 const mongoose = require("mongoose");
-const app = express();
 const presonsRouter = require("./routers/presons");
+
+const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
